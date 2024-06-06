@@ -7,6 +7,7 @@ Class Conexion{
     private $password;
     private $base_datos;
 
+    // un comentario
     public function __construct(){
         $this->servidor = '127.0.0.1';
         $this->usuario = 'root';
