@@ -1,0 +1,13 @@
+
+
+label {
+    color: white;
+}
+
+#id_remember{
+    margin-left: 65%;
+}
+
+.validation-error {
+    border-color: #ff0000 !important;
+}

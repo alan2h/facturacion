@@ -1,0 +1,11 @@
+{
+    "name": "alan_beck/facturacion",
+    "autoload": {
+        "psr-4": {
+            "modelos\\": "modelos/"
+        }
+    },
+    "require": {
+        "phpmailer/phpmailer": "^6.9"
+    }
+}
