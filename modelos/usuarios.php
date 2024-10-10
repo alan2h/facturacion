@@ -1,9 +1,11 @@
 
 <?php
-
+    ini_set('display_errors', 1);
     require_once('conexion.php');
+    require_once('paginacion.php');
+    require_once('auditoria.php');
 
-    class Usuario {
+    class Usuario  extends Pagination{
         private $id;
         private $nombre_usuario;
         private $email;
@@ -22,12 +24,18 @@
         }
 
         public function guardar(){
-                
-            $conexion = new Conexion();
-            $password = password_hash($this->password, PASSWORD_DEFAULT);
+            try{
+                $conexion = new Conexion();
+                $password = password_hash($this->password, PASSWORD_DEFAULT);
+                $query = "INSERT INTO usuarios (nombre_usuario, email, password, perfiles_id) VALUES ('$this->nombre_usuario', '$this->email', '$password', '$this->perfiles_id')";
+                $id = $conexion->insertar($query);
+                $auditoria = new Auditoria('guardar', $id, 'usuarios');
+                $auditoria->guardar();
+                return $id;
+            }catch(Exception $e){
+                throw new Exception('Division by zero.');
+            }
             
-            $query = "INSERT INTO usuarios (nombre_usuario, email, password, perfiles_id) VALUES ('$this->nombre_usuario', '$this->email', '$password', '$this->perfiles_id')";
-            return $conexion->insertar($query);
         }
 
         public function actualizar(){
@@ -37,19 +45,48 @@
             return $conexion->actualizar($query);
         }
 
+        public function cambiar_password(){
+                $conexion = new Conexion();
+                $password = password_hash($this->password, PASSWORD_DEFAULT);
+                $query = "UPDATE usuarios SET password = '$password' WHERE id = '$this->id'";
+                return $conexion->actualizar($query);
+        }
+
         public function eliminar(){
             $conexion = new Conexion();
             $query = "UPDATE usuarios SET activo = 0 WHERE id = '$this->id'";
-            return $conexion->actualizar($query);
+            $resultado =  $conexion->actualizar($query);
+            $auditoria = new Auditoria('eliminar', $this->id, 'usuarios');
+            $auditoria->guardar();
+            return $resultado;
         }
 
         public function validar_usuario(){
             $conexion = new Conexion();
-            $query = "SELECT * FROM usuarios WHERE nombre_usuario = '$this->nombre_usuario'";
+            $query = "SELECT * FROM usuarios WHERE nombre_usuario = '$this->nombre_usuario' and activo = 1";
             return $conexion->consultar($query);
         }
-        
 
+        public function validar_email(){
+                $conexion = new Conexion();
+                $query = "SELECT * FROM usuarios WHERE email = '$this->email'";
+                return $conexion->consultar($query);
+        }
+            
+        public function traer_usuarios(){
+            $conexion = new Conexion();
+            $query = "SELECT usuarios.id as usuarios_id, usuarios.*, perfiles.* 
+            FROM facturacion.usuarios inner join 
+            perfiles on perfiles.id=usuarios.perfiles_id where activo = 1
+            limit $this->current_page, $this->page_size";
+            return $conexion->consultar($query);     
+        }
+
+        public function traer_usuarios_cantidad(){
+            $conexion = new Conexion();
+            $query = "SELECT COUNT(*) as total FROM usuarios WHERE activo = 1";
+            return $conexion->consultar($query);
+        }
 
         /**
          * Get the value of id
