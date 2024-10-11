@@ -8,8 +8,8 @@ use PHPMailer\PHPMailer\PHPMailer;
   $phpmailer->Host = 'smtp.gmail.com';
   $phpmailer->SMTPAuth = true;
   $phpmailer->Port = 587;
-  $phpmailer->Username = 'beckalan303@gmail.com';
-  $phpmailer->Password = 'jkoitehtzggwmyby';                                   //TCP port to connect to; use 587 if you have set `SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS`
+  $phpmailer->Username = '';
+  $phpmailer->Password = '';                                   //TCP port to connect to; use 587 if you have set `SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS`
 
   //Recipients
   $phpmailer->setFrom('beckalan303@gmail.com', 'Area de soporte');
